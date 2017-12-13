@@ -52,7 +52,7 @@ main(int argc, char* argv[])
   cmd.Parse(argc, argv);
 
   AnnotatedTopologyReader topologyReader("", 25);
-  topologyReader.SetFileName("src/ndnSIM/examples/topologies/topo-6-node.txt");
+  topologyReader.SetFileName("src/ndnSIM/examples/topologies/topo-grid-3x3.txt");
   topologyReader.Read();
 
   // Install NDN stack on all nodes
@@ -68,38 +68,38 @@ main(int argc, char* argv[])
   ndnGlobalRoutingHelper.InstallAll();
 
   // Getting containers for the consumer/producer
-  Ptr<Node> consumer1 = Names::Find<Node>("Src1");
-  Ptr<Node> consumer2 = Names::Find<Node>("Src2");
+  Ptr<Node> consumer1 = Names::Find<Node>("Node0");
+  //Ptr<Node> consumer2 = Names::Find<Node>("Src2");
 
-  Ptr<Node> producer1 = Names::Find<Node>("Dst1");
-  Ptr<Node> producer2 = Names::Find<Node>("Dst2");
+  Ptr<Node> producer1 = Names::Find<Node>("Node4");
+  Ptr<Node> producer2 = Names::Find<Node>("Node6");
 
   ndn::AppHelper consumerHelper("ns3::ndn::ConsumerCbr");
   consumerHelper.SetAttribute("Frequency", StringValue("100")); // 100 interests a second
 
   // on the first consumer node install a Consumer application
   // that will express interests in /dst1 namespace
-  consumerHelper.SetPrefix("/dst1");
+  consumerHelper.SetPrefix("/prefix");
   consumerHelper.Install(consumer1);
 
   // on the second consumer node install a Consumer application
   // that will express interests in /dst2 namespace
-  consumerHelper.SetPrefix("/dst2");
-  consumerHelper.Install(consumer2);
+//  consumerHelper.SetPrefix("/dst2");
+ // consumerHelper.Install(consumer2);
 
   ndn::AppHelper producerHelper("ns3::ndn::Producer");
   producerHelper.SetAttribute("PayloadSize", StringValue("1024"));
 
   // Register /dst1 prefix with global routing controller and
   // install producer that will satisfy Interests in /dst1 namespace
-  ndnGlobalRoutingHelper.AddOrigins("/dst1", producer1);
-  producerHelper.SetPrefix("/dst1");
+  ndnGlobalRoutingHelper.AddOrigins("/prefix/evil", producer1);
+  producerHelper.SetPrefix("/prefix/evil");
   producerHelper.Install(producer1);
 
   // Register /dst2 prefix with global routing controller and
   // install producer that will satisfy Interests in /dst2 namespace
-  ndnGlobalRoutingHelper.AddOrigins("/dst2", producer2);
-  producerHelper.SetPrefix("/dst2");
+  ndnGlobalRoutingHelper.AddOrigins("/prefix/good", producer2);
+  producerHelper.SetPrefix("/prefix/good");
   producerHelper.Install(producer2);
 
   // Calculate and install FIBs

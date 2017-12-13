@@ -71,7 +71,8 @@ main(int argc, char* argv[])
   ndnGlobalRoutingHelper.InstallAll();
 
   // Getting containers for the consumer/producer
-  Ptr<Node> producer = Names::Find<Node>("Node8");
+
+  Ptr<Node> producer = Names::Find<Node>("Node6");
   NodeContainer consumerNodes;
   consumerNodes.Add(Names::Find<Node>("Node0"));
 
